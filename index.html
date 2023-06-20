@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Open Science Map</title>
+    
+    
+    <script type="text/javascript" src='plugins/leaflet/leaflet.js'></script>
+
+    <link rel="stylesheet" href="plugins/leaflet/leaflet.css" />
+
+    <script type="text/javascript" src='plugins/leaflet/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster.js'></script>
+    <link rel="stylesheet" href="plugins/leaflet/Leaflet.markercluster-1.4.1/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="plugins/leaflet/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css">
+
+    <!-- from https://jqueryui.com/download/ -->
+    <link rel="stylesheet" href="plugins/jquery-ui/jquery-ui.css">
+
+
+    <script src="plugins/jquery-ui/external/jquery/jquery.js"></script>
+    <script src="plugins/jquery-ui/jquery-ui.js"></script>
+
+    <script type="text/javascript" src="plugins/jquery/jquery-dateformat.min.js"></script>
+    <script type="text/javascript" src="plugins/jquery/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="plugins/jquery/jquery.datetimepicker.full.min.js"></script>
+    <link rel="stylesheet" href="plugins/jquery/jquery.datetimepicker.css">
+
+    <script type="text/javascript" src="plugins/jquery/jquery.cookie.js"></script>
+
+    <script src="plugins/jquery.csv.js"></script>
+
+    <!--bootstrap-->
+    <link href="plugins/bootstrap-5.0.2-dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <script src="plugins/bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="plugins/rison.js"></script>
+
+    <script src="js/index.js"></script>
+     <script src="js/utils.js"></script>
+     <script src="js/filter.js"></script>
+    <script src="js/layer_manager.js"></script>
+     <script src="js/map_manager.js"></script>
+    <link rel="stylesheet" href="css/style.css" />
+
+
+
+<body>
+<div class="overlay ">
+    <div class="progress">
+          <div id="loader" class="progress-bar progress-bar-success progress-bar-striped active align-middle bg-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+            <span id="current-progress"></span>
+          </div>
+         </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col d-flex justify-content-between">
+             <span class="header_text">Open Science Map</span>
+            <div id="git_but" ><a class="btn btn-default" href="" target="git" data-toggle="tooltip" title="Go to Git Repo" data-original-title="Go to git Repo"><i class="bi bi-github"></i></a></div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+               <div id="map_wrapper" >
+                    <div id="map"></div>
+                </div>
+        </div>
+    </div>
+  <div class="row mt-3">
+    <div class="col-4">
+      <div id="search_panel_wrapper" class="tab_panel">
+                <div id="side_header">
+
+                    <div class="input-group search_wrapper">
+                      <input id="search" type="text" class="form-control" placeholder="">
+                      <div class="input-group-append">
+                        <button class="btn  btn-primary" type="button" id="search_but"> <i class="bi bi-search"></i></button>
+                      </div>
+                    </div>
+
+
+                     <div id="filter_date" class="inline">
+                         <input  id="filter_date_checkbox" type="checkbox" value="">
+                          <label class="form-check-label" for="filter_date_checkbox"></label>
+                         <input id="filter_start_date" type="text" class="date_field"/>
+                         <span id="filter_date_to"></span>
+                         <input id="filter_end_date" type="text" class="date_field"/>
+                         <div class='filter_slider_box'></div>
+                     </div>
+                     <div id="filter_box"></div>
+                </div>
+                <div id="nav_wrapper">
+                   <button id="nav" class="btn  btn-primary" onclick="javascript:filter_manager.go_back()"></button>
+                    <span class="total_results"></span>
+                </div>
+
+
+                <div id='browse_wrapper' >
+                    <div id="browse_panel">
+                         <div id="filter_area">
+                            <div id="filters" class="ui-widget" ></div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+           </div>
+
+    </div>
+    <div class="col">
+       <div id="results">
+
+                <div >
+                    <div id="results_view"></div>
+
+                </div>
+            </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+</body>
+</html>
