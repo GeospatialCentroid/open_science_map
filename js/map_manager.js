@@ -48,7 +48,9 @@ class Map_Manager {
     var $this=this
 
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-                maxZoom: 20,
+
+                maxZoom: 16,
+
                 attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
             }).addTo($this.map);
 
@@ -81,7 +83,8 @@ class Map_Manager {
     // specify popup options
     this.popup_options =
     {
-    'className' : 'popup'
+    'className' : 'popup',
+    "keepInView":false
     }
 
     // used during layer selection
@@ -136,7 +139,7 @@ class Map_Manager {
         }
 
 
-        analytics_manager.track_event("web_map","click","layer_id",this.get_selected_layer()?.id)
+        //analytics_manager.track_event("web_map","click","layer_id",this.get_selected_layer()?.id)
         //start by using the first loaded layer
         var layer = this.get_selected_layer()
         console_log("Get selected layer",layer)
@@ -219,18 +222,16 @@ class Map_Manager {
     }
 
     show_popup_details(_features){
-           console_log("show pop up details",_features)
+           console.log("show pop up details",_features)
            var $this =this
            var layer = this.get_selected_layer()
            if(!layer){
                 this.popup_close()
                 return
            }
-           var layer_select_html="<span id='layer_select'>"+ this.show_layer_select(layer.id)+"</span>"
-          // make sure at least one feature was identified.
-          var  html =layer_select_html
-          $this.features=_features
 
+          $this.features=_features
+          var html=""
           if (typeof(_features)!="undefined" && _features.length > 0) {
             // Add in next and previous buttons
             // show the feature layer
@@ -246,7 +247,7 @@ class Map_Manager {
 
             html += "<div id='popup_scroll'><table id='props_table'>"
             html+="</table></div>"
-            html+= "<a href='javascript:map_manager.map_zoom_event()'>"+LANG.IDENTIFY.ZOOM_TO+"</a><br/>"
+            html+= "<a href='javascript:map_manager.map_zoom_event()'>zoom to</a><br/>"
 
             // if we are working with GeoJSON - all sending layer to back
             if (layer.type == 'GeoJSON'){
@@ -254,8 +255,6 @@ class Map_Manager {
             }
              if (layer.type == 'GeoJSON' && layer_manager.layers.length>0){
                 html+= "<a id='select_by_shape' href='javascript:map_manager.select_by_shape_event()'>"+LANG.IDENTIFY.SELECT_BY_SHAPE+"</a>"
-                html+= "<span id='select_by_shape_span'>"+layer_manager.get_layer_select_html(this.selected_layer_id,false,false,true)+"</span>"
-                html+="<br/>"
             }
           } else {
             html = LANG.IDENTIFY.NO_INFORMATION+"<br/>"+layer_select_html
@@ -288,7 +287,7 @@ class Map_Manager {
          for (var p in props){
             if (p !='_id'){
             var val = String(props[p]).hyper_text()
-            html+="<tr><td>"+p+"</td><td>"+val+"</td></tr>"
+            html+="<tr><td><b>"+p+"</b></td><td>"+val+"</td></tr>"
             }
          }
         $("#props_table").html(html)
@@ -522,6 +521,42 @@ class Map_Manager {
         }).addTo(this.map);
 
 
+    }
+    show_highlight_geo_json(geo_json){
+        var $this=this
+        // when a researcher hovers over a resource show the bounds on the map
+        if (typeof(this.highlighted_feature) !="undefined"){
+            this.hide_highlight_feature();
+        }
+        if (geo_json?.geometry && geo_json.geometry.type =="Point" || geo_json?.type=="MultiPoint"){
+            //special treatment for points
+            this.highlighted_feature = L.geoJSON(geo_json, {
+              pointToLayer: function (feature, latlng) {
+                        return L.marker(latlng, {icon: $this.get_marker_icon()});
+                }
+            }).addTo(this.map);
+        }else{
+            this.highlighted_feature =  L.geoJSON(geo_json,{
+                style: function (feature) {
+                    return {color: "#fff",fillColor:"#fff",fillOpacity:.5};
+                }
+                }).addTo(this.map);
+        }
+
+    }
+    get_selected_layer(){
+        // start with the last layer (top) if not yet set - check to make use the previous selection still exists
+        if (!this.selected_layer_id || !layer_manager.is_on_map(this.selected_layer_id) ){
+            if ( layer_manager.layers.length>0){
+                this.selected_layer_id=layer_manager.layers[layer_manager.layers.length-1].id
+            }else{
+                console_log("No layers for you!")
+                return
+            }
+
+        }
+
+        return layer_manager.get_layer_obj(this.selected_layer_id);
     }
 }
  

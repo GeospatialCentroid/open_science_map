@@ -91,6 +91,7 @@ warning: #ff1b28
 
 #nav_wrapper{
     height:30px;
+    margin-top:5px;
 }
 #nav{
     padding:3px;
@@ -411,9 +412,11 @@ margin-left:-15px;
     background: #f7f7f7;
     max-height: 320px;
     overflow: auto;
+    width:400px;
 }
 #popup_scroll{
     max-height: 205px;
+    min-width: 360px;
     overflow: auto;
 }
 #popup_control_table{
@@ -955,3 +958,10 @@ a[aria-disabled="true"] {
 .badge {
     max-height: 20px;
 }
+
+#props_table td{
+vertical-align: top;
+  text-align: left;
+
+}
+

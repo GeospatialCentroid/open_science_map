@@ -58,7 +58,7 @@ function setup_map(){
      {params:params['e'] ,
         lat:36.25408922222581,
         lng: -98.7485718727112,
-        z:3,
+        z:8,
         limit:100 // max results for identify
         })
 
@@ -71,6 +71,7 @@ function setup_filters(){
         omit_result_item:["id","lat,lng","Timestamp","Name:","Email:","start date","end date","Link to Project","Project/Example"], // define which attributes not to show when a selection is made
         omit_filter_item:["id","lat,lng","Timestamp","Name:","Email:","start date","end date","Link to Project","Project/Example","In what ways does this example elevate or highlight NASA's Year of Open Science goals? (Check as many as apply.)"],
         path_col:"Link to Project",// the url to the dataset landing page
+        popup_properties:["Project/Example","Institution","Link to Project"],
         title_col:"Project/Example",
         sub_title_col:"Institution",
         location:"lat,lng",
@@ -175,7 +176,6 @@ function window_resize() {
         p+="&l="+rison.encode(layer_manager.layers_list)
     }
 
-    p+='&t='+$("#tabs").find(".active").attr("id")
     if(typeof(filter_manager.panel_name)!="undefined"){
         // add the panel if available
         p+="/"+filter_manager.panel_name;

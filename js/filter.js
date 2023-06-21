@@ -498,7 +498,7 @@ class Filter_Manager {
         this.save_filter_params()
 
         this.add_filter_watcher();
-        layer_manager.create_geojson(subset,this.location)
+        layer_manager.create_geojson(subset,this.location,this.popup_properties)
 
     }
 
