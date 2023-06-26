@@ -95,6 +95,10 @@ class Map_Manager {
     console_log("loaded map!!")
   })
 
+  this.map.on('whenReady', function(){
+    console_log("ready map!!")
+  })
+
   this.add_legend()
 
   }
@@ -376,7 +380,7 @@ class Map_Manager {
         // define a default marker
         return L.divIcon({
           className: "marker_div",
-          iconAnchor: [0, 8],
+            iconAnchor: [0, 8],
           labelAnchor: [-6, 0],
           popupAnchor: [0, -36],
           html: '<span class="marker '+resource_marker_class+'" />'

@@ -16,6 +16,7 @@ class Layer_Manager {
         this[p]=properties[p]
     }
      this.layers=[]
+     this.first_load=true;// to control the initial zooming while the map is initializing
   }
   create_geojson(subset,location_col,popup_properties){
     var geojson={ "type": "FeatureCollection","features": []}
@@ -95,13 +96,21 @@ class Layer_Manager {
     })
     layer_obj.addLayer(markers)
     layer_obj.data = data
-    console.log(this.map)
     layer_obj.addTo(this.map);
     //
     console_log(layer_obj)
-
     // center map to bounds
-     this.map.fitBounds(markers.getBounds());
+    var timeout=0
+    if(this.first_load){
+        timeout = 1000;
+        this.first_load=false;
+
+    }
+
+    setTimeout(function() {
+        $this.map.fitBounds(markers.getBounds());
+    }, timeout);
+
 }
 layer_click(e,_resource_id){
         map_manager.layer_clicked=true

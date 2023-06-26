@@ -410,13 +410,13 @@ margin-left:-15px;
 .popup .leaflet-popup-tip,
 .popup .leaflet-popup-content-wrapper {
     background: #f7f7f7;
-    max-height: 320px;
+    max-height: 220px;
     overflow: auto;
-    width:400px;
+
 }
 #popup_scroll{
-    max-height: 205px;
-    min-width: 360px;
+    max-height: 175px;
+
     overflow: auto;
 }
 #popup_control_table{
