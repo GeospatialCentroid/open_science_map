@@ -366,7 +366,6 @@ class Filter_Manager {
     }
 
     add_filter(_id,value){
-        console_log("add_filter with a chip",_id,value)
         if (_id ==false){
             _id = "Search"
             // add text to the search field
@@ -458,17 +457,22 @@ class Filter_Manager {
                 }else if (a=='Date'){
                     // check to see if the start and end dates for each item are between the bounds
                     // account for empty end dates
-                     if(obj[this.date[1]] == ""){
+                    if(obj[this.date[1]] == ""){
                         obj[this.date[1]]=obj[this.date[0]]
-                     }
-                    var start_filter=moment.utc(this.filters[a][0]).unix()
-                    var start_obj=moment.utc(obj[this.date[0]]).unix()
-                    var end_filter=moment.utc(this.filters[a][1]).unix()
-                    var end_obj=moment.utc(obj[this.date[1]]).unix()
-
-
-                    if(obj[this.date[0]] == "" || start_filter>start_obj && end_filter<end_obj){
+                    }
+                    if(obj[this.date[0]] == ""){
                         meets_criteria=false
+                    }else{
+                        var start_filter=moment.utc(this.filters[a][0]).unix()
+                        var start_obj=moment.utc(obj[this.date[0]]).unix()
+                        var end_filter=moment.utc(this.filters[a][1]).unix()
+                        var end_obj=moment.utc(obj[this.date[1]]).unix()
+//                        console.log("start_filter>start_obj",start_filter>start_obj)
+//                         console.log("end_filter>end_obj",end_filter>end_obj)
+                        if(start_filter>start_obj && end_filter>end_obj){
+                            meets_criteria=false
+                        }
+
                     }
 
                 }else if (a=='bounds'){
@@ -549,7 +553,6 @@ class Filter_Manager {
        this.subset_data =
        $.map(data, function(item){
             var label =item[$this.title_col]
-            console.log()
             if ($this.hasOwnProperty('sub_title_col') && item[$this.sub_title_col]!=""){
                 label +=" ("+item[$this.sub_title_col]+")"
             }
@@ -862,7 +865,6 @@ class Filter_Manager {
 
   }
     set_filters(){
-        console_log("set_filters",this.params[0])
         var select_item =true
         //loop over all the set url params and set the form
 
@@ -880,7 +882,8 @@ class Filter_Manager {
             }else if(a=="bounds"){
                   $("#filter_bounds_checkbox").prop("checked", true)
             }else if(a=="Date"){
-                  $("#filter_date_checkbox").prop("checked", true)
+                $("#filter_date_checkbox").prop("checked", true)
+                this.add_filter(a,val)
             }else{
                 this.add_filter(a,val)
             }
@@ -895,22 +898,26 @@ class Filter_Manager {
 
     }
     set_filter(id,list){
-     console_log("set_filter",id,list)
      //check if numeric
      if(list.length>1 && $.isNumeric(list[0])){
-        $("#"+id+'_slider').each(function(){
-            $(this).slider( 'values', [ list[0], list[1] ] );
-            //set handle values
-            $("#"+$(this).attr("id")+"_handle0").text(list[ 0 ])
-            $("#"+$(this).attr("id")+"_handle1").text(list[ 1 ])
-        });
-
+         this.set_slider("#"+id+'_slider', list)
+     }else if ($.inArray(id, ["Date"])>-1){
+         this.set_slider("#filter_date .filter_slider_box", [moment(list[0]).unix(),moment(list[1]).unix()])
+          $("#filter_start_date").datepicker().val(moment(list[0]).utc().format('YYYY-MM-DD'))
+          $("#filter_end_date").datepicker().val(moment(list[1]).utc().format('YYYY-MM-DD'))
      }else{
         for(var l = 0;l<list.length;l++){
              $("#"+id+" input[value='"+list[l]+"']").prop('checked', true);
         }
-
      }
+  }
+  set_slider(elm_id, list){
+    $(elm_id).each(function(){
+            $(this).slider( 'values', [ list[0], list[1] ] );
+            //set handle values
+            $("#"+$(this).attr("id")+"_handle0").text(list[ 0 ])
+            $("#"+$(this).attr("id")+"_handle1").text(list[ 1 ])
+    });
   }
   reset_filter(id){
         // take the id (maybe dropdown or slider) and remove the selection
@@ -973,7 +980,6 @@ class Filter_Manager {
     }
 
     delay_date_change(){
-    console.log("Delay date change")
         var $this=this
         // prevent multiple calls when editing filter parameters
         if(this.timeout){
@@ -997,6 +1003,7 @@ class Filter_Manager {
             this.filter()
          }else{
             this.remove_filter('Date')
+            this.filter()
         }
     }
     load_json(file_name,call_back,extra){

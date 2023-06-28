@@ -336,11 +336,6 @@ margin-left:-15px;
     font-size: .7rem;
 }
 
-.list-group-item:last-child {
-
-   border-bottom-right-radius: 0;
-     border-bottom-left-radius: 0;
-}
 .list-group-item{
 
  width: 100%;

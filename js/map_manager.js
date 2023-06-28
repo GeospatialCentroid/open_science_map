@@ -267,7 +267,7 @@ class Map_Manager {
                 html+= "<a id='select_by_shape' href='javascript:map_manager.select_by_shape_event()'>"+LANG.IDENTIFY.SELECT_BY_SHAPE+"</a>"
             }
           } else {
-            html = LANG.IDENTIFY.NO_INFORMATION+"<br/>"+layer_select_html
+            html = "No information found<br/>"
           }
            setTimeout(function(){
                $("#popup_content").html(html)
