@@ -61,7 +61,7 @@ class Filter_Manager {
            $this.add_filter(false,[$("#search").val()])
            $this.filter()
            //go to results
-           $this.slide_position("results")
+           //$this.slide_position("results")
         }else{
             $.get($this.place_url, { q: $("#search").val() }, function(data) {
                 try{
@@ -80,39 +80,7 @@ class Filter_Manager {
         }
     );
     //
-    //date search
-    $('#filter_date_checkbox').change(
-        function(){
-          filter_manager.delay_date_change();
-        }
-    );
-    var start =new Date("1800-01-01T00:00:00")
-    var end =new Date();
-    $("#filter_start_date").datepicker({ dateFormat: 'yy-mm-dd'}).val($.format.date(start, 'yyyy-MM-dd'))
-    $("#filter_end_date").datepicker({ dateFormat: 'yy-mm-dd'}).val($.format.date(end, 'yyyy-MM-dd'))
 
-    $("#filter_start_date").change( function() {
-        filter_manager.delay_date_change()
-
-    });
-    $("#filter_end_date").change( function() {
-      filter_manager.delay_date_change()
-    });
-
-    var values = [start.getTime(),end.getTime()]
-    $("#filter_date .filter_slider_box").slider({
-        range: true,
-        min: values[0],
-        max: values[1],
-        values:values,
-        slide: function( event, ui ) {
-
-           $("#filter_start_date").datepicker().val($.format.date(new Date(ui.values[0]), 'yyyy-MM-dd'))
-           $("#filter_end_date").datepicker().val($.format.date(new Date(ui.values[1]), 'yyyy-MM-dd'))
-           filter_manager.delay_date_change()
-
-     }
-    })
   }
    load_csv(file_name,func){
         var $this=this
@@ -149,6 +117,21 @@ class Filter_Manager {
                  }
             }
         }
+         // account for dates
+        var date_list=[]
+        if($this?.date){
+            for (var i=0;i<$this.json_data.length;i++){
+                for (var c in $this.date){
+                var val = $this.json_data[i][$this.date[c]]
+                      if(val!=""){
+                       date_list.push(moment.utc(val))
+                      }
+                 }
+            }
+        }
+        //sort
+        date_list= date_list.sort((a, b) => a.valueOf() - b.valueOf())
+        $this.add_date_search(date_list[0],date_list[date_list.length-1])
         ///---
         // now that we have the records we need create a filter menu
         $this.generate_filters($this.json_data)
@@ -164,6 +147,7 @@ class Filter_Manager {
             $this.populate_search($this.json_data,true);
         }
 
+
         //-------------
         //hide loader
         clearInterval($this.progress_interval)
@@ -177,6 +161,44 @@ class Filter_Manager {
             });
         },300);
         after_filters();
+    }
+
+    add_date_search(start,end){
+             //date search
+        $('#filter_date_checkbox').change(
+            function(){
+              filter_manager.delay_date_change();
+            }
+        );
+        //var start =new Date("1800-01-01T00:00:00")
+        //var end =new Date();
+        $("#filter_start_date").datepicker({ dateFormat: 'yy-mm-dd'}).val(start.format('YYYY-MM-DD'))
+
+        $("#filter_end_date").datepicker({ dateFormat: 'yy-mm-dd'}).val(end.format('YYYY-MM-DD'))
+
+        $("#filter_start_date").change( function() {
+            filter_manager.delay_date_change()
+
+        });
+        $("#filter_end_date").change( function() {
+          filter_manager.delay_date_change()
+        });
+        // use numeric equivalent for the slider
+        var values = [start.unix(),end.unix()]
+        $("#filter_date .filter_slider_box").slider({
+            range: true,
+            min: values[0],
+            max: values[1],
+            values:values,
+            slide: function( event, ui ) {
+               $("#filter_start_date").datepicker().val(moment.unix(ui.values[0]).format('YYYY-MM-DD'))
+               $("#filter_end_date").datepicker().val(moment.unix(ui.values[1]).format('YYYY-MM-DD'))
+               filter_manager.delay_date_change()
+
+         }
+        })
+
+
     }
      generate_filters(_data){
         // create a list of all the unique values
@@ -346,7 +368,7 @@ class Filter_Manager {
     add_filter(_id,value){
         console_log("add_filter with a chip",_id,value)
         if (_id ==false){
-            _id = LANG.SEARCH.CHIP_SUBMIT_BUT_LABEL
+            _id = "Search"
             // add text to the search field
             $("#search").val(value)
         }
@@ -361,11 +383,13 @@ class Filter_Manager {
         if (value!=null){
             if($.isNumeric(value[0]) && value.length<=2){
                 text_val=value[0]+" - "+value[1]
+            }else if ($.inArray(id, ["Date"])>-1){
+                 text_val=value[0]+" - "+value[1]
             }else{
                 text_val=value.join(", ")
             }
         }
-        this.show_filter_selection(_id.replaceAll( " ", "__"),id+": "+text_val)
+        this.show_filter_selection(_id.replaceAll( " ", "__"),id+": "+text_val.clip_text(30))
         if (value==null){
            this.remove_filter(_id)
         }
@@ -379,7 +403,7 @@ class Filter_Manager {
         // add a close button
         text+="<a class='bi bi-x btn' style='margin-right:-10px;'></a>"
         //create a list of selected filters to easily keep track
-        var html="<div class='chip blue lighten-4' id='"+id+"'>"+text+"</div>"
+        var html="<div class='chip lighten-4' id='"+id+"'>"+text+"</div>"
         //if exists update it
         if($( "#"+id ).length) {
             $( "#"+id ).html(text)
@@ -421,7 +445,7 @@ class Filter_Manager {
             var meets_criteria=true; // a boolean to determine if the item should be included
             var obj=this.json_data[i]
             for (var a in this.filters){
-                if (a=="search"){
+                if (a=="Search"){
                     // if search term not found in both title and sub title
 //                    if(obj[this.title_col].indexOf(this.filters[a][0]) == - 1 &&  obj[this.sub_title_col].indexOf(this.filters[a][0])==-1){
 //                        meets_criteria=false
@@ -429,6 +453,21 @@ class Filter_Manager {
                     // convert to string for search
                     var obj_str = JSON.stringify(obj)
                     if(obj_str.indexOf(this.filters[a][0])==-1){
+                        meets_criteria=false
+                    }
+                }else if (a=='Date'){
+                    // check to see if the start and end dates for each item are between the bounds
+                    // account for empty end dates
+                     if(obj[this.date[1]] == ""){
+                        obj[this.date[1]]=obj[this.date[0]]
+                     }
+                    var start_filter=moment.utc(this.filters[a][0]).unix()
+                    var start_obj=moment.utc(obj[this.date[0]]).unix()
+                    var end_filter=moment.utc(this.filters[a][1]).unix()
+                    var end_obj=moment.utc(obj[this.date[1]]).unix()
+
+
+                    if(obj[this.date[0]] == "" || start_filter>start_obj && end_filter<end_obj){
                         meets_criteria=false
                     }
 
@@ -526,6 +565,7 @@ class Filter_Manager {
           minLength: 0,
           select: function( event, ui ) {
                 event.preventDefault();
+                // prevent the appended bracket value from being used in the search
                 $("#search").val(ui.item.label.substring(0,ui.item.label.indexOf("(")-1));
                 $("#search_but").trigger("click")
             },
@@ -549,39 +589,53 @@ class Filter_Manager {
 
     show_results(){
          // loop over the subset of items and create entries in the 'results_view'
-        var html= '<ul class="list-group"' +'">'
+       // var html= '<ul class="list-group"' +'">'
+        var html='<div class="accordion accordion-flush list-group" id="accordion_flush">'
         for (var s in this.subset_data){
-             var id = this.subset_data[s].value
-             html += "<li class='list-group-item d-flex justify-content-between list-group-item-action' "
-             html +=  "onmouseleave='filter_manager.hide_bounds()' "
-             html+= "onmouseenter='filter_manager.show_bounds(\""+id+"\")' >"
-             html+= this.subset_data[s].label
-             html +="<span><button type='button' class='btn btn-primary' onclick='filter_manager.select_item(\""+id+"\")'>"+"Details"+"</button>"
+            var id = this.subset_data[s].value
+//             html += "<li  class='list-group-item  list-group-item-action' "
+//             html +=  "onmouseleave='filter_manager.hide_bounds()' "
+//             html+= "onmouseenter='filter_manager.show_bounds(\""+id+"\")' >"
+//
+//             html +="<div style='float:right'><button type='button'  class='btn btn-primary' onclick='filter_manager.select_item(\""+id+"\")'>"+"Details"+"</button>"
+//            //d-flex justify-content-between
+//             html+="</div>"
+//             html+= "<span>"+this.subset_data[s].label+"</span>"
+//             html+="</li>"
 
-             html+="</span>"
 
-             html+="</li>"
+            var text= this.get_details(this.get_match(id))
+
+            html+=' <div class="accordion-item  list-group-item  list-group-item-action">'
+            html+= ' <h2 class="accordion-header" id="flush-heading'+id+'">'
+            html+=  ' <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse'+id+'" aria-expanded="false" aria-controls="flush-collapse'+id+'">'
+            html+= this.subset_data[s].label
+            html+=   '</button>'
+            html+='</h2>'
+            html+=' <div id="flush-collapse'+id+'" class="accordion-collapse collapse" aria-labelledby="flush-heading'+id+'" >'//data-bs-parent="#accordion_flush"// to collapse other when opened
+            html+=  '<div class="accordion-body wrap_word">'+text
+            html+=  '</div></div></div>'
         }
-        html+="</ul>"
+        html+="</div>"//"</ul>"
 
          $("#results_view").html(html)
          $("#results_view").scrollTop()
     }
-    select_item(id){
-        // use the id of the csv
-        var match = this.get_match(id)
-
-        this.show_match(match)
-        //for reference track the selected page
-        this.page_id=id
-        this.page_num=this.get_page_num(id)
-        // add the page number to the address for quicker access via link sharing
-        //this.filters['p']=this.page_num
-        this.save_filter_params()
-
-        //
-        this.slide_position("details")
-    }
+//    select_item(id){
+//        // use the id of the csv
+//        var match = this.get_match(id)
+//
+//        this.show_match(match)
+//        //for reference track the selected page
+//        this.page_id=id
+//        this.page_num=this.get_page_num(id)
+//        // add the page number to the address for quicker access via link sharing
+//        //this.filters['p']=this.page_num
+//        this.save_filter_params()
+//
+//        //
+//        this.slide_position("details")
+//    }
     show_bounds(_resource_id){
         var resource = this.get_match(_resource_id)
         // parse the envelope - remove beginning and end
@@ -672,17 +726,9 @@ class Filter_Manager {
         }
 
     }
-     show_match(match){
-        // when a selection is made, fade-in the overlay and then looad
-        // @param match: a json object with details (including a page path to load 'path_col')
 
-        var obj=this
 
-         $("#result_total .spinner-border").show();
-         this.show_details(match)
-    }
-
-    show_details(match){
+    get_details(match){
         // @param match: a json object with details (including a page path to load 'path_col')
         //create html details to show
         var html="";
@@ -709,16 +755,7 @@ class Filter_Manager {
 
         }
 
-      //check that there is data
-      if(table_data[0].length==1 && match.usable_links.length>0){
-         // temporarily get the details from the ESRI metadata
-         this.load_json(match.usable_links[0][0]+"?f=json",this.show_loaded_columns)
-
-      }else{
-            html+=this.table_manager.get_combined_table_html(this.table_data_col,table_data)
-
-        }
-        $("#details_view").html(html)
+       return html
     }
     show_loaded_columns(data){
          console_log("show_loaded_columns",data)
@@ -842,6 +879,8 @@ class Filter_Manager {
                 select_item =false
             }else if(a=="bounds"){
                   $("#filter_bounds_checkbox").prop("checked", true)
+            }else if(a=="Date"){
+                  $("#filter_date_checkbox").prop("checked", true)
             }else{
                 this.add_filter(a,val)
             }
@@ -934,6 +973,7 @@ class Filter_Manager {
     }
 
     delay_date_change(){
+    console.log("Delay date change")
         var $this=this
         // prevent multiple calls when editing filter parameters
         if(this.timeout){
@@ -949,13 +989,14 @@ class Filter_Manager {
     update_date_filter(){
          // Add date filter
          if ($('#filter_date_checkbox').is(':checked')){
-            var start = $.format.date(new Date($("#filter_start_date").val()), 'yyyy-MM-dd')//T00:00:00Z
-            var end = $.format.date(new Date($("#filter_end_date").val()), 'yyyy-MM-dd')//T00:00:00Z
 
-            filter_manager.add_filter("dct_issued_s","[ "+start+" TO "+end+" ]")
+            var start = moment.unix($("#filter_date .filter_slider_box").slider("values")[0]).utc().format('YYYY-MM-DD')
+            var end =  moment.unix($("#filter_date .filter_slider_box").slider("values")[1]).utc().format('YYYY-MM-DD')
 
+            this.add_filter("Date",[start,end])
+            this.filter()
          }else{
-            this.remove_and_update_filters('dct_issued_s')
+            this.remove_filter('Date')
         }
     }
     load_json(file_name,call_back,extra){

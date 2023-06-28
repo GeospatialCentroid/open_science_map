@@ -91,15 +91,21 @@ class Map_Manager {
     this.selected_layer_id
 
 
-  this.map.on('load', function(){
-    console_log("loaded map!!")
-  })
 
-  this.map.on('whenReady', function(){
-    console_log("ready map!!")
-  })
 
-  this.add_legend()
+    this.add_legend()
+
+//    $('.marker').focus(function() {
+//        console.log($(document.activeElement))
+//
+//    });
+
+    $(document).on("keydown", "#map", function(e) {
+            if(e.keyCode==13){
+                 $(document.activeElement).trigger('click');
+
+            }
+        })
 
   }
 

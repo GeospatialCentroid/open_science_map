@@ -20,7 +20,6 @@ class Layer_Manager {
   }
   create_geojson(subset,location_col,popup_properties){
     var geojson={ "type": "FeatureCollection","features": []}
-
      for (var i=0;i<subset.length;i++){
         var loc =subset[i][location_col].split(",")
         var props={}
@@ -48,6 +47,7 @@ class Layer_Manager {
     var $this = this
     if(this.layers.length>0){
          this.map.removeLayer(this.layers[0].layer_obj);
+         this.layers=[]
     }
 
     this.layers.push({ "id":_resource_id,"layer_obj":layer_obj});
@@ -79,11 +79,18 @@ class Layer_Manager {
             }else{
                 feature.properties._id = feature.properties.id
             }
+            // create an accessible alt_name
+            var alt_name="";
+             if(feature.properties){
+                alt_name = feature.properties[Object.keys(feature.properties)[0]]
+             }
+
             var geo =L.geoJSON(feature, {pane: _resource_id, style: style,
                 pointToLayer: function(feature, latlng) {
                     return L.marker(latlng, {
-                        icon: map_manager.get_marker_icon(resource_marker_class)
-                      });
+                        icon: map_manager.get_marker_icon(resource_marker_class),
+                        alt: alt_name
+                      })
                 },
             })
             // force a layer id for access

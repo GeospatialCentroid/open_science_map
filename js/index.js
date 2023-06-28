@@ -68,13 +68,14 @@ function setup_map(){
 function setup_filters(){
     filter_manager = new Filter_Manager({
         csv:"https://docs.google.com/spreadsheets/d/e/2PACX-1vQmgyPcmSUv0wrEUCtMFEZIl1rabVGl_fh94hzH4hhONkii-BWIgQvNy0uQzAIfDnU4RfPtSXdJO6UJ/pub?gid=1117849997&single=true&output=csv",
-        omit_result_item:["id","lat,lng","Timestamp","Name:","Email:","start date","end date","Link to Project","Project/Example"], // define which attributes not to show when a selection is made
-        omit_filter_item:["id","lat,lng","Timestamp","Name:","Email:","start date","end date","Link to Project","Project/Example","In what ways does this example elevate or highlight NASA's Year of Open Science goals? (Check as many as apply.)"],
+        omit_result_item:["id","lat,lng","Timestamp","Name:","Email:","start date","end date"], // define which attributes not to show when a selection is made
+        omit_filter_item:["id","lat,lng","Title","Timestamp","Name:","Email:","start date","end date","Link to Project","Project/Example","In what ways does this example elevate or highlight NASA's Year of Open Science goals? (Check as many as apply.)"],
         path_col:"Link to Project",// the url to the dataset landing page
-        popup_properties:["Project/Example","Institution","Link to Project"],
-        title_col:"Project/Example",
+        popup_properties:["Title","Project/Example","Institution","Link to Project"],
+        title_col:"Title",
         sub_title_col:"Institution",
         location:"lat,lng",
+        date:["start date","end date"],
         params:params['f'],
      })
 
@@ -143,7 +144,7 @@ function window_resize() {
 //                overflow: 'hidden',
 //                height: '100%'
 //            });
-
+            $(".leaflet-control-zoom ").show()
             map_manager.map.scrollWheelZoom.enable();
        }else{
              //mobile view
@@ -156,6 +157,9 @@ function window_resize() {
 
             // drop the map down for mobile
             $("#map_wrapper").width("100%")
+
+            $(".leaflet-control-zoom ").hide()
+
 
             map_manager.map.scrollWheelZoom.disable();
        }

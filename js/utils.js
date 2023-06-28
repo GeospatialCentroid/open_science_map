@@ -58,11 +58,10 @@ String.prototype.clip_text=function(limit){
     return this
 }
 String.prototype.hyper_text=function(){
-
-    if(this.startsWith("http")){
-        return "<a href='"+this.toString()+"' target='_blank'>"+this.toString()+"</a>"
-    }
-    return this
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    return this.replace(urlRegex, function(url) {
+        return '<a href="' + url + '" target="_blank">' + url + '</a>';
+    })
 }
 
 //set via url params
