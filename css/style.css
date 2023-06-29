@@ -412,11 +412,11 @@ margin-left:-15px;
 }
 .leaflet-popup-content-wrapper{
 
- height: 220px;
+ height: 120px;
 }
 
 #popup_scroll{
-    height: 175px;
+    height: 75px;
      width: 300px;
 
     overflow: auto;

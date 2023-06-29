@@ -69,14 +69,15 @@ function setup_filters(){
     filter_manager = new Filter_Manager({
         csv:"https://docs.google.com/spreadsheets/d/e/2PACX-1vQmgyPcmSUv0wrEUCtMFEZIl1rabVGl_fh94hzH4hhONkii-BWIgQvNy0uQzAIfDnU4RfPtSXdJO6UJ/pub?gid=1117849997&single=true&output=csv",
         omit_result_item:["id","lat,lng","Timestamp","Name:","Email:","start date","end date"], // define which attributes not to show when a selection is made
-        omit_filter_item:["id","lat,lng","Title","Timestamp","Name:","Email:","start date","end date","Link to Project","Project/Example","In what ways does this example elevate or highlight NASA's Year of Open Science goals? (Check as many as apply.)"],
+        omit_filter_item:["id","lat,lng","Title","Timestamp","Name:","Email:","start date","end date","Link to Project","Description","In what ways does this example elevate or highlight NASA's Year of Open Science goals? (Check as many as apply.)"],
         path_col:"Link to Project",// the url to the dataset landing page
-        popup_properties:["Title","Project/Example","Institution","Link to Project"],
+        popup_properties:["Title","Institution"],
         title_col:"Title",
         sub_title_col:"Institution",
         location:"lat,lng",
         date:["start date","end date"],
         params:params['f'],
+        comma:["Category"]
      })
 
 

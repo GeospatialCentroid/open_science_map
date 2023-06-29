@@ -232,7 +232,6 @@ class Map_Manager {
     }
 
     show_popup_details(_features){
-           console.log("show pop up details",_features)
            var $this =this
            var layer = this.get_selected_layer()
            if(!layer){
@@ -257,7 +256,8 @@ class Map_Manager {
 
             html += "<div id='popup_scroll'><table id='props_table'>"
             html+="</table></div>"
-            html+= "<a href='javascript:map_manager.map_zoom_event()'>zoom to</a><br/>"
+
+            html+= "<a href='javascript:filter_manager.show_details(\""+_features[0].properties._id+"\")'>Show Details</a><br/>"
 
             // if we are working with GeoJSON - all sending layer to back
             if (layer.type == 'GeoJSON'){
@@ -295,7 +295,7 @@ class Map_Manager {
 
         var html=''
          for (var p in props){
-            if (p !='_id'){
+            if (p !='_id' && p !='id'){
             var val = String(props[p]).hyper_text()
             html+="<tr><td><b>"+p+"</b></td><td>"+val+"</td></tr>"
             }
@@ -440,6 +440,7 @@ class Map_Manager {
                this.turf_search(layer,feature)
             }
     }
+
 
      map_zoom_event(_bounds){
         var bounds

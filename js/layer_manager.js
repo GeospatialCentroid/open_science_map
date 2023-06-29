@@ -28,6 +28,8 @@ class Layer_Manager {
         for(var p in popup_properties){
             props[popup_properties[p]]=subset[i][popup_properties[p]]
         }
+        //store the id for easy access
+        props["id"]=subset[i].id
        if(loc.length>1){
         geojson.features.push({
           "type": "Feature",
@@ -119,6 +121,21 @@ class Layer_Manager {
     }, timeout);
 
 }
+zoom_marker(_id){
+    var coords = this.get_feature(_id)
+    var corner=L.latLng(Number(coords[1]), Number(coords[0]))//L.latLngBounds(coords, coords);
+    map_manager.map_zoom_event(L.latLngBounds(corner, corner))
+    //this.layer_click({latlng:corner},1)
+}
+get_feature(_id){
+    var f =this.layers[0].layer_obj.data.features
+    for (var i =0;i<f.length;i++){
+        var props=f[i].properties
+        if(props._id==_id){
+            return f[i].geometry.coordinates
+        }
+    }
+  }
 layer_click(e,_resource_id){
         map_manager.layer_clicked=true
         map_manager.selected_layer_id=_resource_id
@@ -129,7 +146,7 @@ layer_click(e,_resource_id){
         map_manager.popup_show();
        // try{
               map_manager.selected_feature_id=layer_manager.get_object_id(e.layer.feature);
-              console.log( map_manager.selected_feature_id)
+
               map_manager.show_popup_details([e.layer.feature])
         //}catch(error){
             // could be an artificial click

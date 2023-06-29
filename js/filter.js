@@ -145,6 +145,7 @@ class Filter_Manager {
             browser_control=false
         }else{
             $this.populate_search($this.json_data,true);
+             $this.filter()
         }
 
 
@@ -592,22 +593,11 @@ class Filter_Manager {
 
     show_results(){
          // loop over the subset of items and create entries in the 'results_view'
-       // var html= '<ul class="list-group"' +'">'
         var html='<div class="accordion accordion-flush list-group" id="accordion_flush">'
         for (var s in this.subset_data){
             var id = this.subset_data[s].value
-//             html += "<li  class='list-group-item  list-group-item-action' "
-//             html +=  "onmouseleave='filter_manager.hide_bounds()' "
-//             html+= "onmouseenter='filter_manager.show_bounds(\""+id+"\")' >"
-//
-//             html +="<div style='float:right'><button type='button'  class='btn btn-primary' onclick='filter_manager.select_item(\""+id+"\")'>"+"Details"+"</button>"
-//            //d-flex justify-content-between
-//             html+="</div>"
-//             html+= "<span>"+this.subset_data[s].label+"</span>"
-//             html+="</li>"
-
-
             var text= this.get_details(this.get_match(id))
+            text+="<br/>"+"<a href='javascript:layer_manager.zoom_marker(\""+id+"\")'>Zoom to Location</a><br/>"
 
             html+=' <div class="accordion-item  list-group-item  list-group-item-action">'
             html+= ' <h2 class="accordion-header" id="flush-heading'+id+'">'
@@ -639,6 +629,11 @@ class Filter_Manager {
 //        //
 //        this.slide_position("details")
 //    }
+  show_details(id){
+
+        $("#flush-collapse"+id).removeClass("collapse");
+
+    }
     show_bounds(_resource_id){
         var resource = this.get_match(_resource_id)
         // parse the envelope - remove beginning and end
