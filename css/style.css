@@ -43,7 +43,7 @@ a {
 }
 
 .bg-primary{
- background-color: #1fc8e3 !important;
+ background-color: #1fc8e3;
 
 }
 
@@ -987,4 +987,18 @@ vertical-align: top;
 .accordion{
     border: 1px solid rgba(0,0,0,.125);
 
+}
+
+sup {
+    top: -.5em;
+    position: relative;
+    font-size: 75%;
+    line-height: 0;
+    vertical-align: baseline;
+    text-align:right;
+}
+.org_text{
+    font-size: 75%;
+    text-align:right;
+    width:100%;
 }

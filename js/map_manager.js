@@ -378,7 +378,7 @@ class Map_Manager {
     }
 
 
-    get_marker_icon(resource_marker_class){
+    get_marker_icon(resource_marker_class,style){
         if(!resource_marker_class){
 
             resource_marker_class=""
@@ -389,7 +389,7 @@ class Map_Manager {
             iconAnchor: [0, 8],
           labelAnchor: [-6, 0],
           popupAnchor: [0, -36],
-          html: '<span class="marker '+resource_marker_class+'" />'
+          html: '<span class="marker '+resource_marker_class+'" style="'+style+'" />'
          })
     }
 
@@ -468,7 +468,7 @@ class Map_Manager {
      scroll_to_map(){
          $('html, body').animate({
                 scrollTop: $("#map").offset().top
-            }, 1000);
+            }, 1);
      }
      //
     update_map_pos(no_save){

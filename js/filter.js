@@ -113,10 +113,27 @@ class Filter_Manager {
         if($this?.comma_separated_col){
             for (var i=0;i<$this.json_data.length;i++){
                 for (var c in $this.comma_separated_col){
-                   $this.json_data[i][$this.comma_separated_col[c]] = $this.json_data[i][$this.comma_separated_col[c]].split(",")
+                   $this.json_data[i][$this.comma_separated_col[c]] = $this.json_data[i][$this.comma_separated_col[c]].split(",").map(function(item) {return item.trim();});
                  }
             }
         }
+        // for items without colors, use the Category and see if there's another item with a category and color to use
+        // step 1 create a list of categories with colors
+        $this.category_color={}
+        if($this?.color){
+            for (var i=0;i<$this.json_data.length;i++){
+                 if( $this.json_data[i][$this.color]!=""){
+                    $this.category_color[$this.json_data[i][$this.category]] = $this.json_data[i][$this.color]
+                 }else{
+                    //now assign a color if there is none
+                    if( $this.category_color[$this.json_data[i][$this.category]]){
+                        $this.json_data[i][$this.color]= $this.category_color[$this.json_data[i][$this.category]]
+                    }
+                 }
+            }
+        }
+
+
          // account for dates
         var date_list=[]
         if($this?.date){
@@ -171,11 +188,13 @@ class Filter_Manager {
               filter_manager.delay_date_change();
             }
         );
-        //var start =new Date("1800-01-01T00:00:00")
-        //var end =new Date();
-        $("#filter_start_date").datepicker({ dateFormat: 'yy-mm-dd'}).val(start.format('YYYY-MM-DD'))
+        //Use the current data
+        var input_start = moment()
+        var input_end = moment().year(moment().year()+1)
 
-        $("#filter_end_date").datepicker({ dateFormat: 'yy-mm-dd'}).val(end.format('YYYY-MM-DD'))
+        $("#filter_start_date").datepicker({ dateFormat: 'yy-mm-dd'}).val(input_start.format('YYYY-MM-DD'))
+
+        $("#filter_end_date").datepicker({ dateFormat: 'yy-mm-dd'}).val(input_end.format('YYYY-MM-DD'))
 
         $("#filter_start_date").change( function() {
             filter_manager.delay_date_change()
@@ -185,7 +204,7 @@ class Filter_Manager {
           filter_manager.delay_date_change()
         });
         // use numeric equivalent for the slider
-        var values = [start.unix(),end.unix()]
+        var values = [start.unix(),input_end.unix()]
         $("#filter_date .filter_slider_box").slider({
             range: true,
             min: values[0],
@@ -351,7 +370,17 @@ class Filter_Manager {
             }
             html+='<label class="list-group-item d-flex justify-content-between list-group-item-action">'
             html+='<span><input class="form-check-input me-1 align-left" type="checkbox" value="'+val+'">'+text+'</span>'
-            html+='<span class="badge bg-primary rounded-pill">'+count+'</span></label>'
+
+            // Add an exception for color coded categories
+            var style='background-color:#17a2b8;'
+            if(id==this.category){
+               var color=this.category_color[val]
+               style='background-color:'+color
+
+            }
+
+            //
+            html+='<span class="badge rounded-pill" style="'+style+'">'+count+'</span></label>'
         }
 
         html+=" </div>"
@@ -542,7 +571,7 @@ class Filter_Manager {
         this.save_filter_params()
 
         this.add_filter_watcher();
-        layer_manager.create_geojson(subset,this.location,this.popup_properties)
+        layer_manager.create_geojson(subset,this.location,this.color,this.popup_properties)
 
     }
 
@@ -560,7 +589,8 @@ class Filter_Manager {
 
             return {
                 label: label,
-                value: item["id"]
+                value: item["id"],
+                category: item[$this.category]
             };
         });
 
@@ -596,13 +626,20 @@ class Filter_Manager {
         var html='<div class="accordion accordion-flush list-group" id="accordion_flush">'
         for (var s in this.subset_data){
             var id = this.subset_data[s].value
+            var badges=""
+            // for all the categories, create a badge for the same color
+            for (var c in this.subset_data[s].category){
+                var color=this.category_color[this.subset_data[s].category[c]]
+                badges+='<span class="badge rounded-pill mb-1" style="background-color:'+color+'" >'+this.subset_data[s].category[c]+'</span>'
+            }
             var text= this.get_details(this.get_match(id))
-            text+="<br/>"+"<a href='javascript:layer_manager.zoom_marker(\""+id+"\")'>Zoom to Location</a><br/>"
+            text+="<br/>"+"<a href='javascript:layer_manager.zoom_marker(\""+id+"\");javascript:map_manager.scroll_to_map();'>Zoom to Location</a><br/>"
+
 
             html+=' <div class="accordion-item  list-group-item  list-group-item-action">'
             html+= ' <h2 class="accordion-header" id="flush-heading'+id+'">'
-            html+=  ' <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse'+id+'" aria-expanded="false" aria-controls="flush-collapse'+id+'">'
-            html+= this.subset_data[s].label
+            html+=  ' <button class="accordion-button collapsed d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse'+id+'" aria-expanded="false" aria-controls="flush-collapse'+id+'">'
+            html+= this.subset_data[s].label+"<sup>"+badges+"</sup>"
             html+=   '</button>'
             html+='</h2>'
             html+=' <div id="flush-collapse'+id+'" class="accordion-collapse collapse" aria-labelledby="flush-heading'+id+'" >'//data-bs-parent="#accordion_flush"// to collapse other when opened
@@ -614,24 +651,12 @@ class Filter_Manager {
          $("#results_view").html(html)
          $("#results_view").scrollTop()
     }
-//    select_item(id){
-//        // use the id of the csv
-//        var match = this.get_match(id)
-//
-//        this.show_match(match)
-//        //for reference track the selected page
-//        this.page_id=id
-//        this.page_num=this.get_page_num(id)
-//        // add the page number to the address for quicker access via link sharing
-//        //this.filters['p']=this.page_num
-//        this.save_filter_params()
-//
-//        //
-//        this.slide_position("details")
-//    }
   show_details(id){
 
         $("#flush-collapse"+id).removeClass("collapse");
+        $([document.documentElement, document.body]).animate({
+        scrollTop: $("#flush-heading"+id).offset().top-50
+    },100);
 
     }
     show_bounds(_resource_id){
@@ -934,26 +959,6 @@ class Filter_Manager {
     var win = window.open(match[this.path_col], '_blank');
   }
 
-
-    go_back(){
-
-        // based on the panel position choose the movement
-        var go_to_panel=""
-        if(this.panel_name == 'results'){
-            go_to_panel = "browse"
-        }else if(this.panel_name == 'browse'){
-            go_to_panel = "results"
-        }else if(this.panel_name == 'details'){
-            go_to_panel = "results"
-        }else if(this.panel_name == 'layers'){
-            go_to_panel = "results"
-        }else if(this.panel_name == 'sub_details'){
-            go_to_panel = "layers"
-        }else{
-            go_to_panel = "results"
-        }
-        this.slide_position(go_to_panel)
-    }
 
     update_parent_toggle_buttons(elm){
        $(elm).find("[id$='_toggle']").each(function( index ) {

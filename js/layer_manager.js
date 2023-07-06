@@ -18,9 +18,10 @@ class Layer_Manager {
      this.layers=[]
      this.first_load=true;// to control the initial zooming while the map is initializing
   }
-  create_geojson(subset,location_col,popup_properties){
+  create_geojson(subset,location_col,color_col,popup_properties){
     var geojson={ "type": "FeatureCollection","features": []}
      for (var i=0;i<subset.length;i++){
+
         var loc =subset[i][location_col].split(",")
         var props={}
 
@@ -33,6 +34,7 @@ class Layer_Manager {
        if(loc.length>1){
         geojson.features.push({
           "type": "Feature",
+          "marker-color":subset[i][color_col],
           "properties": props,
           "geometry": {
             "coordinates": [loc[1],loc[0]],
@@ -56,6 +58,7 @@ class Layer_Manager {
     // custom points
     var layer_options ={}
     layer_options.color="#ffffff";
+
     layer_options.fillColor="#0290ce";
     layer_options.weight=1;
     var resource_marker_class = "_marker_class"+_resource_id
@@ -70,7 +73,8 @@ class Layer_Manager {
         onEachFeature: function(feature, layer){
             var style = {}
             if(feature.properties?.color){
-                style.fillColor= feature.properties.color
+               style.fillColor= feature.properties.color
+
                 style.color= feature.properties.color
                  style.opacity= 0
             }
@@ -87,10 +91,15 @@ class Layer_Manager {
                 alt_name = feature.properties[Object.keys(feature.properties)[0]]
              }
 
+             var bg_color = "background-color: "+feature["marker-color"].join(",")+";"
+             if(feature["marker-color"].length>1){
+                bg_color ="background-image: linear-gradient("+feature["marker-color"].join(",")+");"
+             }
             var geo =L.geoJSON(feature, {pane: _resource_id, style: style,
                 pointToLayer: function(feature, latlng) {
                     return L.marker(latlng, {
-                        icon: map_manager.get_marker_icon(resource_marker_class),
+
+                        icon: map_manager.get_marker_icon(resource_marker_class,bg_color),
                         alt: alt_name
                       })
                 },
