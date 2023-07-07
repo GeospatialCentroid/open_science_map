@@ -372,7 +372,7 @@ class Filter_Manager {
             html+='<span><input class="form-check-input me-1 align-left" type="checkbox" value="'+val+'">'+text+'</span>'
 
             // Add an exception for color coded categories
-            var style='background-color:#17a2b8;'
+            var style=''
             if(id==this.category){
                var color=this.category_color[val]
                style='background-color:'+color
@@ -380,7 +380,7 @@ class Filter_Manager {
             }
 
             //
-            html+='<span class="badge rounded-pill" style="'+style+'">'+count+'</span></label>'
+            html+='<span class="badge rounded-pill badge_color" style="'+style+'">'+count+'</span></label>'
         }
 
         html+=" </div>"
@@ -763,7 +763,10 @@ class Filter_Manager {
                 if ((typeof link === 'string' || link instanceof String) && link.indexOf("http")==0){
                    link="<a href='"+link+"' target='_blank'>"+link+"</a>"
                 }
-                html+="<span class='fw-bold'>"+i+":</span> "+link+"<br/>"
+                if(link!==""){
+                    html+="<span class='fw-bold'>"+i+":</span> "+link+"<br/>"
+                }
+
             }
         }
         // generate a table from the table_data_cols

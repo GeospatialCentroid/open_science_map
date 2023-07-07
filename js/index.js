@@ -16,11 +16,7 @@ var browser_control=false; //flag for auto selecting to prevent repeat cals
 
 $( function() {
 
-
    initialize_interface()
-
-
-
 });
 
 function initialize_interface(){
@@ -29,9 +25,6 @@ function initialize_interface(){
    setup_filters()
 
 }
-
-
-
 
 function setup_params(){
     if (window.location.search.substring(1)!="" && $.isEmptyObject(params)){
@@ -47,11 +40,7 @@ function setup_params(){
         if (usp.get('d')!=null){
            DEBUGMODE=true
         }
-
-
-
     }
-
 }
 function setup_map(){
     map_manager = new Map_Manager(
@@ -68,8 +57,8 @@ function setup_map(){
 function setup_filters(){
     filter_manager = new Filter_Manager({
         csv:"https://docs.google.com/spreadsheets/d/e/2PACX-1vQmgyPcmSUv0wrEUCtMFEZIl1rabVGl_fh94hzH4hhONkii-BWIgQvNy0uQzAIfDnU4RfPtSXdJO6UJ/pub?gid=1117849997&single=true&output=csv",
-        omit_result_item:["id","Hex Value for Category (CSV)","Category","lat,lng","Timestamp","Name","Email:","start date","end date"], // define which attributes not to show when a selection is made
-        omit_filter_item:["id","Hex Value for Category (CSV)","lat,lng","Title","Timestamp","Name","Email:","start date","end date","URL","Description","How this supports NASA's Year of Open Science goals"],
+        omit_result_item:["id","Hex Value for Category (CSV)","Category","lat,lng","Timestamp","Name","Email:"], // define which attributes not to show when a selection is made
+        omit_filter_item:["id","Hex Value for Category (CSV)","lat,lng","Title","Timestamp","Name","Email:","Start date","End date","URL","Description","How this supports NASA's Year of Open Science goals"],
         path_col:"Link to Project",// the url to the dataset landing page
         popup_properties:["Title","Institution"],
         title_col:"Title",
