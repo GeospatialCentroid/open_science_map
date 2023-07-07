@@ -64,7 +64,7 @@ function setup_filters(){
         title_col:"Title",
         sub_title_col:"Institution",
         location:"lat,lng",
-        date:["start date","end date"],
+        date:["Start date","End date"],
         params:params['f'],
         comma_separated_col:["Category","Hex Value for Category (CSV)"],
         color:["Hex Value for Category (CSV)"],
