@@ -41,8 +41,10 @@ Then navigate to http://localhost:8000/ from your web browser
 
 # Acknowledgements
 Caitlin Carter (She/Her), Program Manager, HELIOS
+
 Kimberly Cox-York, PhD (She/Her), Director, Research Integrity Office
+
 Kevin Worthington, MASc (He/Him), Map and (GIS) Data Specialist, Geospatial Centroid
 
 Special thanks to Dan Carver who was the inspiration for the development of the source code this project was adapted from.
-[This earlier work can be seen here](https://dcarver1.github.io/cwrUSA_maps/)
+[This earlier work can be seen here](https://dcarver1.github.io/cwrUSA_maps/).

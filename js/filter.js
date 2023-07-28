@@ -480,8 +480,8 @@ class Filter_Manager {
 //                        meets_criteria=false
 //                    }
                     // convert to string for search
-                    var obj_str = JSON.stringify(obj)
-                    if(obj_str.indexOf(this.filters[a][0])==-1){
+                    var obj_str = JSON.stringify(obj).toLowerCase()
+                    if(obj_str.indexOf(this.filters[a][0].toLowerCase())==-1){
                         meets_criteria=false
                     }
                 }else if (a=='Date'){
