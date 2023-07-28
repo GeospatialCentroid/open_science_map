@@ -210,3 +210,10 @@ L.Layer.prototype.setInteractive = function (interactive) {
         L.DomUtil.removeClass(this._path, 'leaflet-interactive');
     }
 };
+//https://stackoverflow.com/questions/2346011/how-do-i-scroll-to-an-element-within-an-overflowed-div
+jQuery.fn.scrollTo = function(elem, speed) {
+    $(this).animate({
+        scrollTop:  $(this).scrollTop() - $(this).offset().top + $(elem).offset().top
+    }, speed == undefined ? 1000 : speed);
+    return this;
+};

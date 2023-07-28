@@ -1009,3 +1009,8 @@ sup {
 .badge_color{
      background-color: #F4B33E;
 }
+#results{
+ max-height:520px;
+ overflow-y:auto;
+
+}

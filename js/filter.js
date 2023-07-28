@@ -652,12 +652,8 @@ class Filter_Manager {
          $("#results_view").scrollTop()
     }
   show_details(id){
-
         $("#flush-collapse"+id).removeClass("collapse");
-        $([document.documentElement, document.body]).animate({
-        scrollTop: $("#flush-heading"+id).offset().top-50
-    },100);
-
+        $("#results").scrollTo("#flush-heading"+id);
     }
     show_bounds(_resource_id){
         var resource = this.get_match(_resource_id)
