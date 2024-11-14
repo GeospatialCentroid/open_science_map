@@ -56,7 +56,7 @@ function setup_map(){
 }
 function setup_filters(){
     filter_manager = new Filter_Manager({
-        csv:"https://docs.google.com/spreadsheets/d/e/2PACX-1vQmgyPcmSUv0wrEUCtMFEZIl1rabVGl_fh94hzH4hhONkii-BWIgQvNy0uQzAIfDnU4RfPtSXdJO6UJ/pub?gid=1117849997&single=true&output=csv",
+        csv:"https://docs.google.com/spreadsheets/d/e/2PACX-1vQmlje5yMbsn1mpFF7lV0CgIZ_CtqkzrknNY9NRckzNJxa5AI-IpTIJ8Sut46RQlA/pub?gid=1737273955&single=true&output=csv",
         omit_result_item:["id","Hex Value for Category (CSV)","Category","lat,lng","Timestamp","Name","Email:"], // define which attributes not to show when a selection is made
         omit_filter_item:["id","Hex Value for Category (CSV)","lat,lng","Title","Timestamp","Name","Email:","Start date","End date","URL","Description","How this supports NASA's Year of Open Science goals"],
         path_col:"Link to Project",// the url to the dataset landing page
