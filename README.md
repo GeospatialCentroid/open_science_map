@@ -29,6 +29,8 @@ To enable specific functionality like date and map capabilities, specific column
 The CSV file can grow or shrink to accommodate the needs of the project, though it should be noted that new columns will show immediately on the web interface.
 The *js/index.js* file and *setup_filters* function controls how specific columns are to be handled. These settings could be exported to a settings.js file to make edits to this easier.
 
+Currently the path to the CSV file is contained in the index.js file, having this path loaded in from a config file would make updates to this path easier.
+
 
 # Testing the website locally
 To test the web interface locally a web server is required.
